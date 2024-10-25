@@ -5,7 +5,9 @@ networks:
   minio_network:
     name: minio_network
     driver: bridge
-
+  backend-network:
+    driver: bridge
+    
 services:
   postgres:
     image: postgres:alpine
@@ -17,6 +19,8 @@ services:
       - docker.env
     volumes:
       - postgres:/var/lib/postgresql/data
+    networks:
+      - backend-network
 
   minio:
     image: bitnami/minio
@@ -40,6 +44,8 @@ services:
     command: redis-server --save 20 1 --loglevel warning --requirepass not_a_production_pass
     volumes:
       - redis:/data
+    networks:
+      - backend-network
 
   api:
     container_name: api
@@ -55,6 +61,8 @@ services:
       - minio
     env_file:
       - docker.env
+    networks:
+      - backend-network
 
 volumes:
   postgres:
