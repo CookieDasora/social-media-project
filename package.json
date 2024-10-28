@@ -46,7 +46,7 @@
     "argon2": "^0.41.1",
     "dotenv": "^16.4.5",
     "dotenv-expand": "^11.0.6",
-    "file-type": "16.5.4",
+    "file-type": "19.6.0",
     "ioredis": "^5.4.1",
     "nestjs-s3": "^2.0.1",
     "nestjs-zod": "^3.0.0",
