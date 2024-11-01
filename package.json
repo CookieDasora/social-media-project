@@ -45,7 +45,6 @@
     "@nestjs/throttler": "6.2.1",
     "@prisma/client": "^5.20.0",
     "argon2": "^0.41.1",
-    "cache-manager": "^6.1.2",
     "dotenv": "^16.4.5",
     "dotenv-expand": "^11.0.6",
     "file-type": "16.5.4",

@@ -21,7 +21,7 @@ import { UserModule } from "./users/users.module";
 					limit: 10,
 					ttl: seconds(60),
 					skipIf: () => {
-						return Configuration.NODE_ENV() === "dev" ? true : false;
+						return Configuration.NODE_ENV() === "dev";
 					},
 				},
 			],
