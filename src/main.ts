@@ -1,4 +1,5 @@
 import helmet from "@fastify/helmet";
+import { VersioningType } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import {
 	FastifyAdapter,
@@ -12,12 +13,9 @@ import { Configuration } from "./configuration";
 /*
   --- Present ---
 
-  TODO: Add a authorization system.
   TODO: Send e-mails to the user when something happens to his account.
   TODO: Create the chat system.
         -> Initialize the websocket system first.
-  TODO: Create a TOS.
-  TODO: Fix Docker Image.
 */
 
 async function bootstrap() {
@@ -25,6 +23,11 @@ async function bootstrap() {
 		AppModule,
 		new FastifyAdapter({ logger: true }),
 	);
+
+	app.enableVersioning({
+		type: VersioningType.URI,
+		defaultVersion: "1",
+	});
 
 	patchNestJsSwagger();
 

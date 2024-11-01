@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { jsonArrayFrom, jsonBuildObject } from "kysely/helpers/postgres";
 import { Database } from "src/services/kysely/kysely.service";
 import { v4 as uuid } from "uuid";
 import { UserModel } from "../models/user.model";
@@ -33,7 +34,48 @@ export class UsersRepository {
 	async findByUsername(username: string): Promise<UserModel | undefined> {
 		const user = await this.database
 			.selectFrom("User")
-			.select(["id", "displayName", "username", "createdAt"])
+			.select((eq) => [
+				"id",
+				"displayName",
+				"username",
+				"createdAt",
+				jsonBuildObject({
+					followers: eq
+						.selectFrom("Follows")
+						.whereRef("followerId", "=", "User.id")
+						.select(eq.fn.countAll<number>().as("followers")),
+					following: eq
+						.selectFrom("Follows")
+						.whereRef("followingId", "=", "User.id")
+						.select(eq.fn.countAll<number>().as("following")),
+					kweeks: eq
+						.selectFrom("Kweek")
+						.whereRef("authorId", "=", "User.id")
+						.select(eq.fn.countAll<number>().as("kweeks")),
+				}).as("count"),
+				jsonArrayFrom(
+					eq
+						.selectFrom("Kweek")
+						.select((qb) => [
+							"id",
+							"content",
+							"attachments",
+							"createdAt",
+							"updatedAt",
+							jsonBuildObject({
+								likes: qb
+									.selectFrom("KweekLike")
+									.whereRef("kweekId", "=", "Kweek.id")
+									.select(eq.fn.countAll<number>().as("likes")),
+								comments: qb
+									.selectFrom("Comments")
+									.whereRef("kweekId", "=", "Kweek.id")
+									.select(eq.fn.countAll<number>().as("comments")),
+							}).as("count"),
+						])
+						.whereRef("authorId", "=", "User.id"),
+				).as("kweeks"),
+			])
 			.where("username", "=", username)
 			.executeTakeFirst();
 

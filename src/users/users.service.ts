@@ -28,16 +28,7 @@ export class UserService {
 			throw new NotFoundException("User not found");
 		}
 
-		const followers = await this.userRepository.countFollowers(user.id);
-		const following = await this.userRepository.countFollowing(user.id);
-		const kweeks = await this.userRepository.getUserKweeks(user.id);
-
-		return {
-			...user,
-			followers,
-			following,
-			kweeks,
-		};
+		return user;
 	}
 
 	async create({

@@ -31,6 +31,8 @@ export class KweeksService {
 
 		await this.kweekRepository.addAttachments(id, attachments);
 
+		console.log(id);
+
 		return await this.kweekRepository.findOne(id, false);
 	}
 

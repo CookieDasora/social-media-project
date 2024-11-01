@@ -1,7 +1,7 @@
 import { FastifyMulterModule } from "@nest-lab/fastify-multer";
 import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis";
 import { Module } from "@nestjs/common";
-import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD, APP_PIPE } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule, seconds } from "@nestjs/throttler";
 import { S3Module } from "nestjs-s3";
@@ -16,7 +16,15 @@ import { UserModule } from "./users/users.module";
 @Module({
 	imports: [
 		ThrottlerModule.forRoot({
-			throttlers: [{ limit: 10, ttl: seconds(60) }],
+			throttlers: [
+				{
+					limit: 10,
+					ttl: seconds(60),
+					skipIf: () => {
+						return Configuration.NODE_ENV() === "dev" ? true : false;
+					},
+				},
+			],
 			storage: new ThrottlerStorageRedisService(Configuration.REDIS_URL()),
 			errorMessage: "Too many requests",
 		}),
