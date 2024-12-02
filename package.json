@@ -61,7 +61,7 @@
   "devDependencies": {
     "@biomejs/biome": "1.5.3",
     "@commitlint/cli": "^18.6.1",
-    "@commitlint/config-conventional": "^18.6.3",
+    "@commitlint/config-conventional": "^19.6.0",
     "@nestjs/cli": "^10.4.5",
     "@nestjs/schematics": "^10.1.4",
     "@nestjs/testing": "^10.4.4",
