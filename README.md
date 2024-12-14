@@ -6,72 +6,48 @@
   </picture>
 </p>
 
-A simple RESTful API made with **NestJS** and **Fastify**.
+A social networking application developed using the [NestJS](https://nestjs.com/) with
+the power of [Fastify](https://fastify.dev/) and [Bun](https://bun.sh/).
 
-### 🚀 Preparing the environment
+## ✋ Requirements
+Make sure you have **Bun** in the **latest version**, **Docker** and **Docker Compose**.
 
-Make sure that you have Bun, Docker and Docker Compose installed on your computer.
-
-This project also works with Node and Npm.
-
-First, install the necessary packages with the following commands:
-
+## 🛠️ Installation
+Clone the repository using the following command
 ```bash
-bun i
+git clone https://github.com/hknsh/project-knedita.git
+cd project-knedita
+```
+And then install the project dependencies
+```bash
+bun install
 ```
 
-After that, you can update the `.env` and the `docker.env` files. The `.env` file is for development environment and the `docker.env` is for production.
+## ♻️ Environment Configuration
+Before starting the project, configure the environment variables by creating a `.env` file in the project
+root. You can use the `.env.example` file as reference.
 
-You can find the templates for those files on `.env.example` and `docker.env.example`.
+**Disclaimer: make sure that the variable `MINIO_ROOT_PASSWORD` has 8 or more characters**
 
-To run the necessary services you can execute the following command:
-
-```bash
-bun docker:db
-```
-
-This will start the following services:
-
-- **PostgreSQL**
-- **Redis**
-- **MinIO**
-
-Apply the migrations to the database with the following command:
-
-```bash
-bun migrate:dev
-```
-
-And now, you can start the server with the command:
-
-```bash
-bun dev:start
-```
-
-You can check the documentation accessing the endpoint `/` in your browser
-
-To run in production you can use the following command:
-
+## 🏁 Running the project
+Start the Docker containers with the command:
 ```bash
 bun docker
 ```
+This command will initialize the following services
 
-This will start all the previous services and the back-end image.
+- Postgres
+- Redis
+- MinIO
+- API Server
 
-## 🗄️ Stack
+After that, apply the migrations to the Postgres database:
+```bash
+bun migrate:deploy
+```
 
-This back-end uses the following stack:
+Swagger will be available at the endpoint `/` on your browser.
 
-- **NestJS**
-- **Fastify**
-- **Prisma**
-- **Kysely**
-- **MinIO**
-- **PostgreSQL**
-- **Redis**
-- **Swagger**
-- **Typescript**
-
-## License
+## 📜 License
 
 [MIT](https://choosealicense.com/licenses/mit/)
