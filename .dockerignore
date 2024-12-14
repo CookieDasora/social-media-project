@@ -1,11 +1,8 @@
-.env
 node_modules/
 .vscode/
 Dockerfile
 .dockerignore
 npm-debug.log
 dist
-.env.example
 package-lock_copy.json
 package_copy.json
-docker.env.example

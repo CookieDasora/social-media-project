@@ -1,38 +1,40 @@
-FROM oven/bun:latest AS base
+FROM oven/bun:1 AS base
 WORKDIR /usr/src/app
 
-# Install deps into tmp dir
+ENV NODE_ENV=production
+
 FROM base AS install
+
 RUN mkdir -p /temp/dev
-COPY package.json bun.lockb docker.env /temp/dev/
+COPY package.json bun.lockb /temp/dev/
 RUN cd /temp/dev && bun install --frozen-lockfile
 
-# Install without dev deps
+# Production dependecies
 RUN mkdir -p /temp/prod
 COPY package.json bun.lockb /temp/prod/
+
+# Stupid thing that doesn't allow the build to proceed
 COPY .husky/ /temp/prod/.husky/
 RUN bun install husky -g
+
 RUN cd /temp/prod && bun install --frozen-lockfile --production
 
-# Copy node_modules from temp directory
-FROM base AS prerelase
+# Preparing code
+FROM base AS prerelease
 COPY --from=install /temp/dev/node_modules node_modules
-COPY --from=install /temp/dev/docker.env .env
 COPY . .
 
-ENV NODE_ENV production
-
-RUN bun migrate:deploy 
-
+RUN bunx prisma generate
 RUN bun run build
 
-# Copy production deps
+# Final image
 FROM base AS release
-COPY --from=install /temp/prod/node_modules node_modules
-COPY --from=prerelase /usr/src/app/dist dist
-COPY --from=prerelase /usr/src/app/prisma prisma
-COPY --from=prerelase /usr/src/app/.husky ./.husky
-COPY --from=prerelase /usr/src/app/.env ./.env
-COPY --from=prerelase /usr/src/app/package*.json ./
 
-CMD [ "bun", "dist/main.js" ]
+COPY --from=install /temp/prod/node_modules node_modules
+COPY --from=prerelease /usr/src/app/dist dist
+COPY --from=prerelease /usr/src/app/package.json .
+COPY --from=prerelease /usr/src/app/prisma prisma
+COPY --from=prerelease /usr/src/app/.husky .husky
+
+EXPOSE 8080/tcp
+ENTRYPOINT ["bun", "dist/main.js"]

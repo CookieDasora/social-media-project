@@ -34,11 +34,9 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-old_port
 .git
 .env
 prisma/*.db
 prisma/migrations/dev
-docker.env
 package_copy.json
 package-lock_copy.json
