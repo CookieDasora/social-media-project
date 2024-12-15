@@ -9,6 +9,12 @@ import { InjectS3, S3 } from "nestjs-s3";
 import sharp from "sharp";
 import { Configuration } from "src/configuration";
 
+/*
+ *  TODO: Reformulate the upload file system
+ *        We need to store the S3 bucket and key of the file
+ *        And then generate a signed url of the file on the front-end
+ * */
+
 @Injectable()
 export class S3Service {
 	private bucket: string = Configuration.MINIO_DEFAULT_BUCKETS();
