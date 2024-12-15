@@ -4,7 +4,7 @@ import {
 	ParseFilePipe,
 } from "@nestjs/common";
 
-const UploadImageValidator = new ParseFilePipe({
+export const UploadImageValidator = new ParseFilePipe({
 	validators: [
 		new MaxFileSizeValidator({
 			maxSize: 1024 * 1024,
@@ -13,5 +13,3 @@ const UploadImageValidator = new ParseFilePipe({
 		new FileTypeValidator({ fileType: /^image\/(jpeg|png|webp)$/ }), // File extension validation
 	],
 });
-
-export default UploadImageValidator;
