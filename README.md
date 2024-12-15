@@ -48,6 +48,13 @@ bun migrate:deploy
 
 Swagger will be available at the endpoint `/` on your browser.
 
+## 👷 Contributing
+Before contributing to this project, please take a moment to review the project's
+[Code of Conduct](https://github.com/hknsh/project-knedita/blob/improvements/CODE_OF_CONDUCT.md) and
+[Contributing Guidelines](https://github.com/hknsh/project-knedita/blob/improvements/CONTRIBUTING.md).
+By participating in this project, you agree to follow these guidelines to help maintain a
+respectful and productive environment for everyone involved.
+
 ## 📜 License
 
 [MIT](https://choosealicense.com/licenses/mit/)
