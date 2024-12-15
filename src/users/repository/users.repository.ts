@@ -3,7 +3,6 @@ import { jsonArrayFrom, jsonBuildObject } from "kysely/helpers/postgres";
 import { Database } from "src/services/kysely/kysely.service";
 import { v4 as uuid } from "uuid";
 import { UserModel } from "../models/user.model";
-import { User } from "../types/user.type";
 
 @Injectable()
 export class UsersRepository {
@@ -151,7 +150,7 @@ export class UsersRepository {
 		id: string,
 		username: string | undefined,
 		displayName: string | undefined,
-	): Promise<Pick<User, "username" | "displayName">> {
+	): Promise<Pick<UserModel, "username" | "displayName">> {
 		const user = await this.database
 			.updateTable("User")
 			.set({ username, displayName })
@@ -203,7 +202,7 @@ export class UsersRepository {
 			.executeTakeFirst();
 	}
 
-	async unfollow(followerId: string, followingId) {
+	async unfollow(followerId: string, followingId: string) {
 		return await this.database
 			.deleteFrom("Follows")
 			.where("followerId", "=", followerId)
