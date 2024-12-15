@@ -9,7 +9,6 @@ import { S3Service } from "src/services/s3/s3.service";
 import { CreateUserDTO } from "./dto/create_user.dto";
 import { UserModel } from "./models/user.model";
 import { UsersRepository } from "./repository/users.repository";
-import { User } from "./types/user.type";
 
 @Injectable()
 export class UserService {
@@ -22,6 +21,7 @@ export class UserService {
 	}
 
 	async info(username: string): Promise<UserModel> {
+		// TODO: Add pagination
 		const user = await this.userRepository.findByUsername(username);
 
 		if (user === undefined) {
@@ -97,8 +97,12 @@ export class UserService {
 		id: string,
 		username: string | undefined,
 		displayName: string,
-	): Promise<Pick<User, "username" | "displayName">> {
+	): Promise<Pick<UserModel, "username" | "displayName">> {
 		const user = await this.userRepository.findById(id);
+
+		if (username !== undefined && username.trim() === "") {
+			throw new BadRequestException("Username cannot be an empty string");
+		}
 
 		if (username !== undefined && username.trim() !== user.username) {
 			const isAlreadyInUse = await this.userRepository.findByUsername(username);
