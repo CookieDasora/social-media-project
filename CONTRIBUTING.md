@@ -123,6 +123,11 @@ To maintain a high standard of code quality and consistency, all contributors mu
 - After updating the schema, run the necessary migrations and ensure they are named clearly and concisely
 (e.g., `add_user_email_column`). Avoid generic names like `migration1`.
 
+#### Error Handling
+- Always return errors using **NestJS's global exception filters**
+(e.g., `NotFoundException`, `BadRequestException`, etc.) instead of custom error objects.
+This ensures consistent error handling across the project.
+
 #### Sensitive Data
 - Manage sensitive configurations and secrets with a `.env` file. Ensure this file is excluded from version control
 (e.g., via `.gitignore`).
@@ -133,7 +138,7 @@ To maintain a high standard of code quality and consistency, all contributors mu
 meanings.
 
 #### Code Style
-- Use PascalCase for classes and interfaces.
+- Use PascalCase for classes, interfaces and types.
 - Use camelCase for variables, methods, and functions.
 - Prefer `async/await` for handling asynchronous operations over raw promises.
 - Code style will be enforced using BiomeJS and the `.editorconfig` file. Ensure your code passes all linting rules before
