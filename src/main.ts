@@ -15,11 +15,10 @@ import { Configuration } from "./configuration";
   --- Present ---
 
   TODO: Send e-mails to the user when something happens to his account.
-  TODO: Improve documentation
-  TODO: Fix Dockerfile
-  TODO: Remove unnecessary files
-  TODO: Better intellisense
+  TODO: Improve documentation (specially in Kweek module)
   TODO: Better authentication (Add OAuth e.g.)
+  TODO:
+  TODO: Add pagination on some queries
   TODO: Create the chat system.
         -> Initialize the websocket system first.
 */
