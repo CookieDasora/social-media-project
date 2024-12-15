@@ -19,19 +19,19 @@ import {
 	ApiConsumes,
 	ApiCreatedResponse,
 	ApiNotFoundResponse,
+	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 import { Public } from "src/decorators/public.decorator";
 import { BufferValidator } from "src/validators/buffer.validator";
-import UploadImageValidator from "src/validators/upload_image.validator";
+import { UploadImageValidator } from "src/validators/upload_image.validator";
 import { CreateUserDTO } from "./dto/create_user.dto";
 import { FollowUserDTO } from "./dto/follow_user.dto";
 import { UpdateEmailDTO } from "./dto/update_email.dto";
 import { UpdateNameDTO } from "./dto/update_name.dto";
 import { UpdatePasswordDTO } from "./dto/update_password.dto";
-import UploadImageSchema from "./schemas/upload_image.schema";
 import { UserService } from "./users.service";
 
 @ApiTags("Users")
@@ -55,6 +55,7 @@ export class UserController {
 	@ApiOperation({ summary: "Follow/unfollow a user" })
 	@ApiCreatedResponse({ description: "Followed/unfollowed successfully" })
 	@ApiNotFoundResponse({ description: "User to follow not found" })
+	@ApiUnauthorizedResponse({ description: "Missing authentication token" })
 	@ApiBearerAuth("JWT")
 	follow(@Body() { username }: FollowUserDTO, @Request() req) {
 		return this.userService.follow(req.user.id, username);
@@ -62,10 +63,10 @@ export class UserController {
 
 	// GET
 	@Get("/profile")
-	@ApiOperation({ summary: "Returns information about the logged user" })
+	@ApiOperation({ summary: "Returns information about the logged-in user" })
 	@ApiBearerAuth("JWT")
 	@ApiUnauthorizedResponse({
-		description: "Not authenticated / Invalid JWT Token",
+		description: "Missing authentication token",
 	})
 	me(@Request() req) {
 		return req.user;
@@ -83,15 +84,23 @@ export class UserController {
 	// PATCH
 	@Patch()
 	@ApiOperation({
-		summary: "Updates the username or display name of a logged user",
+		summary: "Updates the username / display name of the logged-in user",
 	})
+	@ApiBadRequestResponse({
+		description: "Username already in use / Empty field",
+	})
+	@ApiOkResponse({ description: "Username updated successfully" })
+	@ApiUnauthorizedResponse({ description: "Missing authentication token" })
 	@ApiBearerAuth("JWT")
-	updateName(@Body() { displayName, username }: UpdateNameDTO, @Request() req) {
+	updateName(@Body() { username, displayName }: UpdateNameDTO, @Request() req) {
 		return this.userService.updateName(req.user.id, username, displayName);
 	}
 
 	@Patch("/email")
-	@ApiOperation({ summary: "Updates the email of a logged user" })
+	@ApiOperation({ summary: "Updates the email of the logged-in user" })
+	@ApiBadRequestResponse({ description: "Email already in use / Empty field" })
+	@ApiOkResponse({ description: "Email updated successfully" })
+	@ApiUnauthorizedResponse({ description: "Missing authentication token" })
 	@ApiBearerAuth("JWT")
 	updateEmail(@Body() body: UpdateEmailDTO, @Request() req) {
 		return this.userService.updateEmail(req.user.id, body.email);
@@ -99,6 +108,9 @@ export class UserController {
 
 	@Patch("/password")
 	@ApiOperation({ summary: "Updates the password of a logged user" })
+	@ApiBadRequestResponse({ description: "Wrong password" })
+	@ApiOkResponse({ description: "Password updated successfully" })
+	@ApiUnauthorizedResponse({ description: "Missing authentication token" })
 	@ApiBearerAuth("JWT")
 	updatePassword(
 		@Body() { old_password, new_password }: UpdatePasswordDTO,
@@ -118,7 +130,18 @@ export class UserController {
 	@ApiBearerAuth("JWT")
 	@UseInterceptors(FileInterceptor("image"))
 	@ApiConsumes("multipart/form-data")
-	@ApiBody(UploadImageSchema)
+	@ApiBody({
+		required: true,
+		schema: {
+			type: "object",
+			properties: {
+				image: {
+					type: "string",
+					format: "binary",
+				},
+			},
+		},
+	})
 	uploadProfileImage(
 		@UploadedFile(
 			UploadImageValidator,
@@ -133,6 +156,8 @@ export class UserController {
 	// DELETE
 	@Delete()
 	@ApiOperation({ summary: "Deletes the account of a logged user" })
+	@ApiOkResponse({ description: "Account deleted successfully" })
+	@ApiUnauthorizedResponse({ description: "Missing authentication token" })
 	@ApiBearerAuth("JWT")
 	delete(@Request() req) {
 		return this.userService.delete(req.user.id);
