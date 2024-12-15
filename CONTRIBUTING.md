@@ -48,7 +48,7 @@ To submit a new issue, please fill out the [new issue form](https://github.com/h
 as much detail as possible, including: 
 - Steps to reproduce the problem.
 - Expected behavior versus actual behavior.
-- Environment details (e.g., OS, Node.js version, dependencies).
+- Environment details (e.g., OS, Bun version, dependencies).
 
 ### <a name="submit-pr"></a> Submitting a Pull Request (PR)
 Before you submit your Pull Request (PR), please follow these steps:
