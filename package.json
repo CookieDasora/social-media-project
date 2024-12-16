@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.670.0",
-    "@fastify/helmet": "^11.1.1",
+    "@fastify/helmet": "^13.0.0",
     "@fastify/multipart": "^8.3.0",
     "@fastify/static": "^6.12.0",
     "@nest-lab/fastify-multer": "^1.2.0",
