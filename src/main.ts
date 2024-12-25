@@ -6,7 +6,6 @@ import {
 	NestFastifyApplication,
 } from "@nestjs/platform-fastify";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import { apiReference } from "@scalar/nestjs-api-reference";
 import { patchNestJsSwagger } from "nestjs-zod";
 import { AppModule } from "./app.module";
 import { Configuration } from "./configuration";
@@ -18,6 +17,7 @@ import { Configuration } from "./configuration";
   TODO: Improve documentation (specially in Kweek module)
   TODO: Better authentication (Add OAuth e.g.)
   TODO: Add pagination on some queries
+  TODO: Generate a signed url instead of returning a s3 link 
   TODO: Create the chat system.
         -> Initialize the websocket system first.
 */
@@ -25,7 +25,7 @@ import { Configuration } from "./configuration";
 async function bootstrap() {
 	const app = await NestFactory.create<NestFastifyApplication>(
 		AppModule,
-		new FastifyAdapter({ logger: process.env.NODE_ENV === "dev" }),
+		new FastifyAdapter({ logger: Configuration.NODE_ENV() === "dev" }),
 	);
 
 	app.enableVersioning({
@@ -40,7 +40,7 @@ async function bootstrap() {
 	const config = new DocumentBuilder()
 		.setTitle("Project Knedita")
 		.setDescription("An open-source social media")
-		.setVersion("1.0")
+		.setVersion("1.1a")
 		.addBearerAuth(
 			{
 				type: "http",
@@ -60,17 +60,6 @@ async function bootstrap() {
 	const document = SwaggerModule.createDocument(app, config);
 
 	SwaggerModule.setup("/", app, document);
-
-	app.use(
-		"/v1/reference",
-		apiReference({
-			withFastify: true,
-			theme: "mars",
-			spec: {
-				content: document,
-			},
-		}),
-	);
 
 	await app.register(helmet);
 

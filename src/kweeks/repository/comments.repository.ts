@@ -4,7 +4,7 @@ import {
 	jsonBuildObject,
 	jsonObjectFrom,
 } from "kysely/helpers/postgres";
-import { Database } from "src/services/kysely/kysely.service";
+import { Database } from "src/common/services/kysely/kysely.service";
 import { v4 as uuid } from "uuid";
 
 @Injectable()

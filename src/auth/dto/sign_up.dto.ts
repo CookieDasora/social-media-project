@@ -1,7 +1,7 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "nestjs-zod/z";
 
-export const LoginUserSchema = z
+export const SignUpUserSchema = z
 	.object({
 		username: z
 			.string({
@@ -12,6 +12,11 @@ export const LoginUserSchema = z
 				"The username must have alphanumerics characters, underscore, dots and it must be between 5 and 15 characters",
 			)
 			.toLowerCase(),
+		email: z
+			.string({
+				required_error: "Email is required",
+			})
+			.email("Invalid email"),
 		password: z
 			.password({
 				required_error: "Password is required",
@@ -26,4 +31,4 @@ export const LoginUserSchema = z
 	})
 	.required();
 
-export class LoginUserDTO extends createZodDto(LoginUserSchema) {}
+export class SignUpUserDTO extends createZodDto(SignUpUserSchema) {}

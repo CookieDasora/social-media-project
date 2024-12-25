@@ -1,6 +1,6 @@
+import { UsersRepository } from "@/users/repository/users.repository";
+import { S3Service } from "@common/services/s3/s3.service";
 import { Module } from "@nestjs/common";
-import { S3Service } from "src/services/s3/s3.service";
-import { UsersRepository } from "src/users/repository/users.repository";
 import { CommentsController } from "./comments.controller";
 import { CommentsService } from "./comments.service";
 import { KweeksController } from "./kweeks.controller";

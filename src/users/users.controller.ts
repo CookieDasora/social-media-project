@@ -1,3 +1,6 @@
+import { Public } from "@common/decorators/public.decorator";
+import { BufferValidator } from "@common/validators/buffer.validator";
+import { UploadImageValidator } from "@common/validators/upload_image.validator";
 import { File, FileInterceptor } from "@nest-lab/fastify-multer";
 import {
 	Body,
@@ -24,14 +27,8 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
-import { Public } from "src/decorators/public.decorator";
-import { BufferValidator } from "src/validators/buffer.validator";
-import { UploadImageValidator } from "src/validators/upload_image.validator";
-import { CreateUserDTO } from "./dto/create_user.dto";
 import { FollowUserDTO } from "./dto/follow_user.dto";
-import { UpdateEmailDTO } from "./dto/update_email.dto";
 import { UpdateNameDTO } from "./dto/update_name.dto";
-import { UpdatePasswordDTO } from "./dto/update_password.dto";
 import { UserService } from "./users.service";
 
 @ApiTags("Users")
@@ -39,18 +36,6 @@ import { UserService } from "./users.service";
 export class UserController {
 	constructor(private readonly userService: UserService) {}
 	// POST
-	@Public()
-	@Post()
-	@ApiOperation({ summary: "Creates a new account" })
-	@ApiCreatedResponse({ description: "Account created successfully" })
-	@ApiBadRequestResponse({
-		description:
-			"Missing field / Invalid username / Invalid email / Weak password",
-	})
-	create(@Body() createUserDTO: CreateUserDTO) {
-		return this.userService.create(createUserDTO);
-	}
-
 	@Post("/follow")
 	@ApiOperation({ summary: "Follow/unfollow a user" })
 	@ApiCreatedResponse({ description: "Followed/unfollowed successfully" })
@@ -94,33 +79,6 @@ export class UserController {
 	@ApiBearerAuth("JWT")
 	updateName(@Body() { username, displayName }: UpdateNameDTO, @Request() req) {
 		return this.userService.updateName(req.user.id, username, displayName);
-	}
-
-	@Patch("/email")
-	@ApiOperation({ summary: "Updates the email of the logged-in user" })
-	@ApiBadRequestResponse({ description: "Email already in use / Empty field" })
-	@ApiOkResponse({ description: "Email updated successfully" })
-	@ApiUnauthorizedResponse({ description: "Missing authentication token" })
-	@ApiBearerAuth("JWT")
-	updateEmail(@Body() body: UpdateEmailDTO, @Request() req) {
-		return this.userService.updateEmail(req.user.id, body.email);
-	}
-
-	@Patch("/password")
-	@ApiOperation({ summary: "Updates the password of a logged user" })
-	@ApiBadRequestResponse({ description: "Wrong password" })
-	@ApiOkResponse({ description: "Password updated successfully" })
-	@ApiUnauthorizedResponse({ description: "Missing authentication token" })
-	@ApiBearerAuth("JWT")
-	updatePassword(
-		@Body() { old_password, new_password }: UpdatePasswordDTO,
-		@Request() req,
-	) {
-		return this.userService.updatePassword(
-			req.user.id,
-			old_password,
-			new_password,
-		);
 	}
 
 	@Patch("/image")

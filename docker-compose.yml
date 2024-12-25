@@ -41,8 +41,8 @@ services:
     networks:
       - backend-network
 
-  knedita:
-    container_name: knedita
+  api:
+    container_name: api
     restart: unless-stopped
     build:
       context: .

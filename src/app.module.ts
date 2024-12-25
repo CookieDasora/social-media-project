@@ -1,3 +1,4 @@
+import { KyselyModule } from "@common/services/kysely/kysely.module";
 import { FastifyMulterModule } from "@nest-lab/fastify-multer";
 import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis";
 import { Module } from "@nestjs/common";
@@ -10,7 +11,6 @@ import { AuthModule } from "./auth/auth.module";
 import { JwtAuthGuard } from "./auth/jwt-auth.guard";
 import { Configuration } from "./configuration";
 import { KweeksModule } from "./kweeks/kweeks.module";
-import { KyselyModule } from "./services/kysely/kysely.module";
 import { UserModule } from "./users/users.module";
 
 @Module({

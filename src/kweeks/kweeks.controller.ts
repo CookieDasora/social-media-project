@@ -1,3 +1,5 @@
+import { Public } from "@common/decorators/public.decorator";
+import { MultiFileValidation } from "@common/validators/multi_file.validator";
 import { File, FilesInterceptor } from "@nest-lab/fastify-multer";
 import {
 	Body,
@@ -19,8 +21,6 @@ import {
 	ApiOperation,
 	ApiTags,
 } from "@nestjs/swagger";
-import { Public } from "src/decorators/public.decorator";
-import { MultiFileValidation } from "src/validators/multi_file.validator";
 import { UpdateKweekDTO } from "./dto/kweeks/update_kweek.dto";
 import { KweeksService } from "./kweeks.service";
 import { AttachmentsSchema } from "./schemas/attachments.schema";

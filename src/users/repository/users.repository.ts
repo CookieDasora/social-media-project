@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { jsonArrayFrom, jsonBuildObject } from "kysely/helpers/postgres";
-import { Database } from "src/services/kysely/kysely.service";
+import { Database } from "src/common/services/kysely/kysely.service";
 import { v4 as uuid } from "uuid";
 import { UserModel } from "../models/user.model";
 

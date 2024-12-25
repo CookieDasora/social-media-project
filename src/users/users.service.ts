@@ -1,12 +1,10 @@
+import { S3Service } from "@common/services/s3/s3.service";
 import { File } from "@nest-lab/fastify-multer";
 import {
 	BadRequestException,
 	Injectable,
 	NotFoundException,
 } from "@nestjs/common";
-import * as argon2 from "argon2";
-import { S3Service } from "src/services/s3/s3.service";
-import { CreateUserDTO } from "./dto/create_user.dto";
 import { UserModel } from "./models/user.model";
 import { UsersRepository } from "./repository/users.repository";
 
@@ -16,10 +14,6 @@ export class UserService {
 		private readonly s3: S3Service,
 		private readonly userRepository: UsersRepository,
 	) {}
-	async auth_search(username: string): Promise<UserModel> {
-		return await this.userRepository.authSearch(username);
-	}
-
 	async info(username: string): Promise<UserModel> {
 		// TODO: Add pagination
 		const user = await this.userRepository.findByUsername(username);
@@ -29,30 +23,6 @@ export class UserService {
 		}
 
 		return user;
-	}
-
-	async create({
-		username,
-		email,
-		password,
-	}: CreateUserDTO): Promise<
-		Pick<UserModel, "displayName" | "username" | "createdAt">
-	> {
-		if ((await this.userRepository.findByUsername(username)) !== undefined) {
-			throw new BadRequestException("Username already in use");
-		}
-
-		if ((await this.userRepository.findByEmail(email)) !== undefined) {
-			throw new BadRequestException("Email already in use");
-		}
-
-		const hash = await argon2.hash(password);
-
-		return await this.userRepository.create({
-			username,
-			email,
-			password: hash,
-		});
 	}
 
 	async follow(authenticated_id: string, username: string) {
@@ -78,21 +48,6 @@ export class UserService {
 		);
 	}
 
-	async updateEmail(id: string, email: string): Promise<{ message: string }> {
-		const user = await this.userRepository.findById(id);
-
-		if (email !== undefined && email.trim() !== user.email) {
-			const isAlreadyInUse = await this.userRepository.findByEmail(email);
-			if (isAlreadyInUse !== undefined && isAlreadyInUse.email !== user.email) {
-				throw new BadRequestException("Email already in use");
-			}
-
-			await this.userRepository.updateEmail(id, email);
-
-			return { message: "Email updated successfully" };
-		}
-	}
-
 	async updateName(
 		id: string,
 		username: string | undefined,
@@ -115,26 +70,6 @@ export class UserService {
 		}
 
 		return await this.userRepository.updateUsername(id, username, displayName);
-	}
-
-	async updatePassword(
-		id: string,
-		old_password: string,
-		new_password: string,
-	): Promise<{ message: string }> {
-		const user = await this.userRepository.authSearch(id);
-
-		const validatePassword = await argon2.verify(user.password, old_password);
-
-		if (!validatePassword) {
-			throw new BadRequestException("Wrong password");
-		}
-
-		const hash = await argon2.hash(new_password);
-
-		await this.userRepository.updatePassword(id, hash);
-
-		return { message: "Password updated successfully" };
 	}
 
 	async uploadImage(id: string, image: File) {

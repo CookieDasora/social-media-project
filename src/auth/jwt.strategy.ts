@@ -1,7 +1,7 @@
+import { Configuration } from "@/configuration";
 import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
-import { Configuration } from "src/configuration";
 
 type Payload = {
 	displayName: string;

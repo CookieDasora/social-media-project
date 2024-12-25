@@ -1,3 +1,4 @@
+import { S3Service } from "@common/services/s3/s3.service";
 import { File } from "@nest-lab/fastify-multer";
 import {
 	BadRequestException,
@@ -5,7 +6,6 @@ import {
 	NotFoundException,
 	UnauthorizedException,
 } from "@nestjs/common";
-import { S3Service } from "src/services/s3/s3.service";
 import { CommentsRepository } from "./repository/comments.repository";
 import { KweeksRepository } from "./repository/kweeks.repository";
 
