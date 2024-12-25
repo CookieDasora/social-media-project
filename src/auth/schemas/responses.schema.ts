@@ -28,13 +28,13 @@ export const SignUpErrors = {
 	InvalidFields: {
 		summary: "Failed to validate fields",
 		value: {
-			status: 400,
 			message: "Failed to validate some fields",
 			errors: [
 				{
 					message: "Email is required",
 				},
 			],
+			statusCode: 400,
 		},
 	},
 };

@@ -17,9 +17,9 @@ export class ZodExceptionFilter implements ExceptionFilter {
 		return this.httpAdapterHost.httpAdapter.reply(
 			response,
 			{
-				status: 400,
 				message: "Failed to validate some fields",
 				errors,
+				statusCode: 400,
 			},
 			400,
 		);
