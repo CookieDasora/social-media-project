@@ -9,7 +9,7 @@ import { S3Module } from "nestjs-s3";
 import { ZodValidationPipe } from "nestjs-zod";
 import { AuthModule } from "./auth/auth.module";
 import { JwtAuthGuard } from "./auth/jwt-auth.guard";
-import { Configuration } from "./configuration";
+import { Environment } from "./environment";
 import { KweeksModule } from "./kweeks/kweeks.module";
 import { UserModule } from "./users/users.module";
 
@@ -21,20 +21,20 @@ import { UserModule } from "./users/users.module";
 					limit: 10,
 					ttl: seconds(60),
 					skipIf: () => {
-						return Configuration.NODE_ENV() === "dev";
+						return Environment.env.NODE_ENV === "dev";
 					},
 				},
 			],
-			storage: new ThrottlerStorageRedisService(Configuration.REDIS_URL()),
+			storage: new ThrottlerStorageRedisService(Environment.env.REDIS_URL),
 			errorMessage: "Too many requests",
 		}),
 		KyselyModule.forRootAsync({
 			useFactory: () => ({
-				host: Configuration.POSTGRES_HOST(),
-				port: Number(Configuration.POSTGRES_PORT()),
-				user: Configuration.POSTGRES_USER(),
-				password: Configuration.POSTGRES_PASSWORD(),
-				database: Configuration.POSTGRES_DB(),
+				host: Environment.env.POSTGRES_HOST,
+				port: Number(Environment.env.POSTGRES_PORT),
+				user: Environment.env.POSTGRES_USER,
+				password: Environment.env.POSTGRES_PASSWORD,
+				database: Environment.env.POSTGRES_DB,
 			}),
 		}),
 		ConfigModule.forRoot({
@@ -47,11 +47,11 @@ import { UserModule } from "./users/users.module";
 		S3Module.forRoot({
 			config: {
 				credentials: {
-					accessKeyId: Configuration.MINIO_ROOT_USER(),
-					secretAccessKey: Configuration.MINIO_ROOT_PASSWORD(),
+					accessKeyId: Environment.env.MINIO_ROOT_USER,
+					secretAccessKey: Environment.env.MINIO_ROOT_PASSWORD,
 				},
 				region: "us-east-1",
-				endpoint: Configuration.MINIO_ENDPOINT(),
+				endpoint: Environment.env.MINIO_ENDPOINT,
 				forcePathStyle: true,
 			},
 		}),

@@ -1,3 +1,4 @@
+import { Environment } from "@/environment";
 import {
 	DeleteObjectsCommand,
 	PutObjectCommand,
@@ -7,7 +8,6 @@ import { File } from "@nest-lab/fastify-multer";
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectS3, S3 } from "nestjs-s3";
 import sharp from "sharp";
-import { Configuration } from "src/configuration";
 
 /*
  *  TODO: Reformulate the upload file system
@@ -17,8 +17,8 @@ import { Configuration } from "src/configuration";
 
 @Injectable()
 export class S3Service {
-	private bucket: string = Configuration.MINIO_DEFAULT_BUCKETS();
-	private endpoint: string = Configuration.MINIO_ENDPOINT();
+	private bucket: string = Environment.env.MINIO_DEFAULT_BUCKETS;
+	private endpoint: string = Environment.env.MINIO_ENDPOINT;
 
 	constructor(@InjectS3() private readonly s3: S3) {}
 

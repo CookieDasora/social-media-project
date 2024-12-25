@@ -1,3 +1,4 @@
+import { Environment } from "@/environment";
 import helmet from "@fastify/helmet";
 import { VersioningType } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
@@ -8,7 +9,6 @@ import {
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { patchNestJsSwagger } from "nestjs-zod";
 import { AppModule } from "./app.module";
-import { Configuration } from "./configuration";
 
 /*
   --- Present ---
@@ -25,7 +25,7 @@ import { Configuration } from "./configuration";
 async function bootstrap() {
 	const app = await NestFactory.create<NestFastifyApplication>(
 		AppModule,
-		new FastifyAdapter({ logger: Configuration.NODE_ENV() === "dev" }),
+		new FastifyAdapter({ logger: Environment.env.NODE_ENV === "dev" }),
 	);
 
 	app.enableVersioning({
@@ -63,6 +63,6 @@ async function bootstrap() {
 
 	await app.register(helmet);
 
-	await app.listen(Configuration.SERVER_PORT(), Configuration.SERVER_HOST());
+	await app.listen(Environment.env.SERVER_PORT, Environment.env.SERVER_HOST);
 }
 bootstrap();

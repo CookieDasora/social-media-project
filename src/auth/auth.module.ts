@@ -1,4 +1,4 @@
-import { Configuration } from "@/configuration";
+import { Environment } from "@/environment";
 import { UsersRepository } from "@/users/repository/users.repository";
 import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
@@ -13,7 +13,7 @@ import { LocalStrategy } from "./local.strategy";
 	imports: [
 		PassportModule,
 		JwtModule.register({
-			secret: Configuration.JWT_ACCESS_SECRET(),
+			secret: Environment.env.JWT_ACCESS_SECRET,
 			signOptions: { expiresIn: "1d" }, // TODO: add refresh tokens
 		}),
 	],

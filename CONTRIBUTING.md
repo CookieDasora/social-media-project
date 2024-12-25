@@ -203,7 +203,7 @@ A scope typically refers to the **controller**, **service**, **module**, etc., b
 Use one of the following supported scopes:
 
 - `app`: For changes in core application files, such as `app.module.ts` and `main.ts`.
-- `config`: For changes in configuration-related files, like `configuration.ts` or `environment.ts`.
+- `config`: For changes in configuration-related files, like `environment.ts`.
 - `auth`: For changes in the `auth` module, including guards (e.g., `jwt-auth.guard.ts`), strategies 
 (e.g., `jwt.strategy.ts`), controllers, services, or DTOs.
 - `kweeks`: For changes in the `kweeks` module, covering controllers (e.g., `kweeks.controller.ts`), services,

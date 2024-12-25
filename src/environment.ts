@@ -52,6 +52,11 @@ const EnvironmentSchema = z.object({
 	MINIO_ROOT_PASSWORD: z.string(),
 	MINIO_DEFAULT_BUCKETS: z.string(),
 	MINIO_ENDPOINT: z.string(),
+
+	EMAIL_ID: z.string().email(),
+	EMAIL_PASS: z.string(),
+	EMAIL_HOST: z.string(),
+	EMAIL_PORT: z.string().regex(/^[0-9]+$/),
 });
 
 type IEnvironment = z.infer<typeof EnvironmentSchema>;
