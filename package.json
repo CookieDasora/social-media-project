@@ -49,6 +49,7 @@
     "file-type": "16.5.4",
     "ioredis": "^5.4.1",
     "kysely": "^0.27.4",
+    "mjml": "^4.15.3",
     "nestjs-s3": "^2.0.1",
     "nestjs-zod": "^3.0.0",
     "nodemailer": "^6.9.16",

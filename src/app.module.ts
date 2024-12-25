@@ -1,6 +1,7 @@
 import { KyselyModule } from "@common/services/kysely/kysely.module";
 import { FastifyMulterModule } from "@nest-lab/fastify-multer";
 import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis";
+import { MailerModule } from "@nestjs-modules/mailer";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD, APP_PIPE } from "@nestjs/core";
@@ -53,6 +54,19 @@ import { UserModule } from "./users/users.module";
 				region: "us-east-1",
 				endpoint: Environment.env.MINIO_ENDPOINT,
 				forcePathStyle: true,
+			},
+		}),
+		MailerModule.forRoot({
+			transport: {
+				host: Environment.env.EMAIL_HOST,
+				port: Number(Environment.env.EMAIL_PORT),
+				auth: {
+					user: Environment.env.EMAIL_ID,
+					pass: Environment.env.EMAIL_PASS,
+				},
+			},
+			defaults: {
+				from: `Project Knedita <${Environment.env.EMAIL_ID}>`,
 			},
 		}),
 	],
