@@ -1,10 +1,10 @@
+import { Database } from "@/common/services/kysely/kysely.service";
 import { Injectable } from "@nestjs/common";
 import {
 	jsonArrayFrom,
 	jsonBuildObject,
 	jsonObjectFrom,
 } from "kysely/helpers/postgres";
-import { Database } from "src/common/services/kysely/kysely.service";
 import { v4 as uuid } from "uuid";
 
 @Injectable()
