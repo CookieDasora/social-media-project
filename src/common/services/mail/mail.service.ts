@@ -1,4 +1,3 @@
-import * as path from "node:path";
 import { MailerService } from "@nestjs-modules/mailer";
 import { Injectable } from "@nestjs/common";
 
