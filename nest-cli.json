@@ -5,6 +5,13 @@
 	"compilerOptions": {
 		"deleteOutDir": true,
 		"builder": "swc",
-		"typeCheck": true
+		"typeCheck": true,
+		"assets": [
+			{
+				"include": "common/services/mail/templates/**/*",
+				"outDir": "dist"
+			}
+		],
+		"watchAssets": true
 	}
 }

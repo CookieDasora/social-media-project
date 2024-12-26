@@ -1,10 +1,27 @@
 <mjml>
-    <mj-head>
-        <mj-preview>
-            <!-- TODO Add mail preview -->
-        </mj-preview>
-    </mj-head>
-    <mj-body>
-        
+    <mj-body background-color="#262626">
+        <mj-section>
+            <mj-column>
+                <mj-image
+                        src="https://raw.githubusercontent.com/hknsh/project-knedita/refs/heads/master/resources/logo-light.svg"
+                        alt="Knedita Logo"></mj-image>
+
+                <mj-text font-size="25px" color="#f5f5f5">Hello, {{username}}.</mj-text>
+
+                <mj-text font-size="18px" color="#f5f5f5">Welcome to Project Knedita!</mj-text>
+
+                <mj-text font-size="16px" color="#f5f5f5">
+                    We're sending this message to confirm your e-mail.
+                    <br></br>
+                    Click the button below to proceed
+                </mj-text>
+
+                <mj-button background-color="#4f46e5" font-size="16px" href="#">Confirm your e-mail</mj-button>
+
+                <mj-text font-size="16px" color="#f5f5f5">
+                    If you didn't made this account you can ignore this e-mail safely.
+                </mj-text>
+            </mj-column>
+        </mj-section>
     </mj-body>
 </mjml>
