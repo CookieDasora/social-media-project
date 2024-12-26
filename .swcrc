@@ -11,8 +11,8 @@
 		},
 		"baseUrl": "./",
 		"paths": {
-		    "@common/*": ["./src/common/*"],
-		    "@/*": ["./src/*"]
+			"@common/*": ["./src/common/*"],
+			"@/*": ["./src/*"]
 		}
 	},
 	"minify": false

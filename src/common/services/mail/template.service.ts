@@ -1,6 +1,6 @@
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
-import { readFile } from "fs/promises";
 import * as Handlebars from "handlebars";
 import mjml from "mjml";
 
