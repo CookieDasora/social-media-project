@@ -1,24 +1,11 @@
 import { Database } from "@/common/services/kysely/kysely.service";
 import { Injectable } from "@nestjs/common";
 import { jsonArrayFrom, jsonBuildObject } from "kysely/helpers/postgres";
-import { v4 as uuid } from "uuid";
 import { UserModel } from "../models/user.model";
 
 @Injectable()
 export class UsersRepository {
 	constructor(private readonly database: Database) {}
-
-	async authSearch(identifier: string): Promise<UserModel | undefined> {
-		const user = await this.database
-			.selectFrom("User")
-			.selectAll()
-			.where((eb) =>
-				eb.or([eb("username", "=", identifier), eb("id", "=", identifier)]),
-			)
-			.executeTakeFirst();
-
-		return user ?? undefined;
-	}
 
 	async findById(id: string): Promise<UserModel | undefined> {
 		const user = await this.database
@@ -90,26 +77,6 @@ export class UsersRepository {
 		return user ?? undefined;
 	}
 
-	async create(data: {
-		username: string;
-		email: string;
-		password: string;
-	}): Promise<Pick<UserModel, "displayName" | "username" | "createdAt">> {
-		const user = this.database
-			.insertInto("User")
-			.values({
-				id: uuid(),
-				username: data.username,
-				email: data.email,
-				password: data.password,
-				createdAt: new Date(),
-			})
-			.returning(["displayName", "username", "createdAt"])
-			.executeTakeFirst();
-
-		return user;
-	}
-
 	async countFollowers(id: string): Promise<number> {
 		const count = await this.database
 			.selectFrom("Follows")
@@ -131,18 +98,10 @@ export class UsersRepository {
 	}
 
 	async getUserKweeks(id: string) {
-		const kweeks = await this.database
+		return await this.database
 			.selectFrom("Kweek")
 			.where("authorId", "=", id)
 			.select(["id", "content", "attachments", "createdAt", "updatedAt"])
-			.execute();
-		return kweeks;
-	}
-	async updateEmail(id: string, email: string): Promise<void> {
-		await this.database
-			.updateTable("User")
-			.set({ email })
-			.where("id", "=", id)
 			.execute();
 	}
 
@@ -151,21 +110,12 @@ export class UsersRepository {
 		username: string | undefined,
 		displayName: string | undefined,
 	): Promise<Pick<UserModel, "username" | "displayName">> {
-		const user = await this.database
+		return await this.database
 			.updateTable("User")
 			.set({ username, displayName })
 			.where("id", "=", id)
 			.returning(["username", "displayName"])
 			.executeTakeFirst();
-		return user;
-	}
-
-	async updatePassword(id: string, password: string): Promise<void> {
-		await this.database
-			.updateTable("User")
-			.set({ password })
-			.where("id", "=", id)
-			.execute();
 	}
 
 	async updateProfileImage(

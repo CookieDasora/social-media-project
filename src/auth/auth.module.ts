@@ -1,12 +1,15 @@
 import { Environment } from "@/environment";
-import { UsersRepository } from "@/users/repository/users.repository";
+import { RedisModule } from "@nestjs-modules/ioredis";
 import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
+import { AuthRefreshTokenService } from "./auth-refresh-token.service";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
-import { JwtStrategy } from "./jwt.strategy";
-import { LocalStrategy } from "./local.strategy";
+import { AuthRepository } from "./repositories/auth.repository";
+import { JwtRefreshStrategy } from "./strategies/jwt-refresh.strategy";
+import { JwtStrategy } from "./strategies/jwt.strategy";
+import { LocalStrategy } from "./strategies/local.strategy";
 
 @Module({
 	controllers: [AuthController],
@@ -14,9 +17,17 @@ import { LocalStrategy } from "./local.strategy";
 		PassportModule,
 		JwtModule.register({
 			secret: Environment.env.JWT_ACCESS_SECRET,
-			signOptions: { expiresIn: "1d" }, // TODO: add refresh tokens
+			signOptions: { expiresIn: "30s" },
 		}),
+		RedisModule,
 	],
-	providers: [AuthService, LocalStrategy, JwtStrategy, UsersRepository],
+	providers: [
+		AuthRepository,
+		AuthService,
+		AuthRefreshTokenService,
+		LocalStrategy,
+		JwtStrategy,
+		JwtRefreshStrategy,
+	],
 })
 export class AuthModule {}

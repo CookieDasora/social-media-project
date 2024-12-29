@@ -7,6 +7,7 @@ import {
 	NestFastifyApplication,
 } from "@nestjs/platform-fastify";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { Logger } from "nestjs-pino";
 import { patchNestJsSwagger } from "nestjs-zod";
 import { AppModule } from "./app.module";
 
@@ -16,6 +17,9 @@ import { AppModule } from "./app.module";
   TODO: Send e-mails to the user when something happens to his account.
   TODO: Improve documentation (specially in Kweek module)
   TODO: Better authentication (Add OAuth e.g.)
+      - TODO: Fix the refreshToken's logic.
+              (A user can access the protected resources
+              with a refreshToken instead of an accessToken) 
   TODO: Add pagination on some queries
   TODO: Generate a signed url instead of returning a s3 link 
   TODO: Create the chat system.
@@ -26,7 +30,10 @@ async function bootstrap() {
 	const app = await NestFactory.create<NestFastifyApplication>(
 		AppModule,
 		new FastifyAdapter({ logger: Environment.env.NODE_ENV === "dev" }),
+		{ bufferLogs: true },
 	);
+
+	app.useLogger(app.get(Logger));
 
 	app.enableVersioning({
 		type: VersioningType.URI,

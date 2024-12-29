@@ -1,8 +1,6 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "nestjs-zod/z";
 
-// TODO: see if it can be refactored
-
 export const UpdatePasswordSchema = z
 	.object({
 		old_password: z

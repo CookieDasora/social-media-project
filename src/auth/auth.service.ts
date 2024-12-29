@@ -1,48 +1,44 @@
 import { UserModel } from "@/users/models/user.model";
-import { UsersRepository } from "@/users/repository/users.repository";
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
 import * as argon2 from "argon2";
-import { SignUpUserDTO } from "./dto/sign_up.dto";
+import { AuthRefreshTokenService } from "./auth-refresh-token.service";
+import { SignUpUserDTO } from "./dto/sign-up.dto";
+import { AuthRepository } from "./repositories/auth.repository";
 
 @Injectable()
 export class AuthService {
 	constructor(
-		private usersRepository: UsersRepository,
-		private jwtService: JwtService,
+		private authRepository: AuthRepository,
+		private authRefreshTokenService: AuthRefreshTokenService,
 	) {}
 
 	async validateUser(
 		username: string,
 		password: string,
 	): Promise<UserModel | null> {
-		const user = await this.usersRepository.authSearch(username);
+		const user = await this.authRepository.findUser(username);
 
 		if (user === undefined) {
 			return null;
 		}
-
 		const validation = await argon2.verify(user.password, password);
 
 		if (user && validation) {
 			const { password, ...result } = user;
 			return result;
 		}
-
 		return null;
 	}
 
-	async login(user: UserModel): Promise<{ token: string }> {
-		const payload = {
-			displayName: user.displayName,
-			username: user.username,
-			profileImage: user.profileImage,
-			sub: user.id,
-		};
+	async login(user: UserModel) {
+		return await this.authRefreshTokenService.generateKeyPair(user.id);
+	}
 
-		return {
-			token: this.jwtService.sign(payload),
-		};
+	async refresh(userId: string, refreshToken: string) {
+		return await this.authRefreshTokenService.refreshToken(
+			refreshToken,
+			userId,
+		);
 	}
 
 	async signUp({
@@ -52,17 +48,16 @@ export class AuthService {
 	}: SignUpUserDTO): Promise<
 		Pick<UserModel, "displayName" | "username" | "createdAt">
 	> {
-		if ((await this.usersRepository.findByUsername(username)) !== undefined) {
+		if ((await this.authRepository.findUser(username)) !== undefined) {
 			throw new BadRequestException("Username already in use");
 		}
 
-		if ((await this.usersRepository.findByEmail(email)) !== undefined) {
+		if ((await this.authRepository.findUserByEmail(email)) !== undefined) {
 			throw new BadRequestException("Email already in use");
 		}
-
 		const hash = await argon2.hash(password);
 
-		return await this.usersRepository.create({
+		return await this.authRepository.createUser({
 			username,
 			email,
 			password: hash,
@@ -70,15 +65,14 @@ export class AuthService {
 	}
 
 	async updateEmail(id: string, email: string): Promise<{ message: string }> {
-		const user = await this.usersRepository.findById(id);
+		const user = await this.authRepository.findUser(id);
 		if (email !== undefined && email.trim() !== user.email) {
-			const isAlreadyInUse = await this.usersRepository.findByEmail(email);
+			const isAlreadyInUse = await this.authRepository.findUserByEmail(email);
 			if (isAlreadyInUse !== undefined && isAlreadyInUse.email !== user.email) {
 				throw new BadRequestException("Email already in use");
 			}
 
-			await this.usersRepository.updateEmail(id, email);
-
+			await this.authRepository.updateUserEmail(id, email);
 			return { message: "Email updated successfully" };
 		}
 	}
@@ -88,18 +82,15 @@ export class AuthService {
 		old_password: string,
 		new_password: string,
 	): Promise<{ message: string }> {
-		const user = await this.usersRepository.authSearch(id);
-
-		const validatePassword = await argon2.verify(user.password, new_password);
+		const user = await this.authRepository.findUser(id);
+		const validatePassword = await argon2.verify(user.password, old_password);
 
 		if (!validatePassword) {
 			throw new BadRequestException("Wrong password");
 		}
 
 		const hash = await argon2.hash(new_password);
-
-		await this.usersRepository.updatePassword(id, hash);
-
+		await this.authRepository.updateUserPassword(id, hash);
 		return { message: "Password updated successfully" };
 	}
 }

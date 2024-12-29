@@ -50,6 +50,12 @@ export type Notifications = {
 	fromUserId: string;
 	toUserId: string;
 };
+export type RefreshToken = {
+	id: Generated<string>;
+	token: string;
+	userId: string;
+	expiryDate: Timestamp;
+};
 export type User = {
 	id: Generated<string>;
 	displayName: string | null;
@@ -67,5 +73,6 @@ export type DB = {
 	Kweek: Kweek;
 	KweekLike: KweekLike;
 	Notifications: Notifications;
+	RefreshToken: RefreshToken;
 	User: User;
 };

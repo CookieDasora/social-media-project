@@ -20,12 +20,15 @@ import {
 	ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
-import { SignInUserDTO } from "./dto/sign_in.dto";
-import { SignUpUserDTO } from "./dto/sign_up.dto";
-import { UpdateEmailDTO } from "./dto/update_email.dto";
-import { UpdatePasswordDTO } from "./dto/update_password.dto";
-import { LocalAuthGuard } from "./local-auth.guard";
+import { RefreshTokenDTO } from "./dto/refresh-token.dto";
+import { SignInUserDTO } from "./dto/sign-in.dto";
+import { SignUpUserDTO } from "./dto/sign-up.dto";
+import { UpdateEmailDTO } from "./dto/update-email.dto";
+import { UpdatePasswordDTO } from "./dto/update-password.dto";
+import { JwtRefreshAuthGuard } from "./guards/jwt-refresh-auth.guard";
+import { LocalAuthGuard } from "./guards/local-auth.guard";
 import {
+	InvalidTokenResponse,
 	LoginResponse,
 	SignUpErrors,
 	UnauthorizedResponse,
@@ -40,7 +43,15 @@ export class AuthController {
 	@Public()
 	@UseGuards(LocalAuthGuard)
 	@Post("/sign_in")
-	@ApiOperation({ summary: "Authenticates a user" })
+	@ApiOperation({
+		summary: "Authenticates a user",
+		description: `
+		  Upon successful authentication, it returns an "accessToken" and a "refreshToken":
+		  
+		  accessToken: A short-lived token used for accessing protected resources.
+		  refreshToken: A long-lived token used to renew the accessToken without re-authentication.
+		`,
+	})
 	@ApiOkResponse({
 		status: 200,
 		description: "Authenticated successfully",
@@ -53,6 +64,27 @@ export class AuthController {
 	@HttpCode(200)
 	async signIn(@Request() req, @Body() _: SignInUserDTO) {
 		return this.authService.login(req.user);
+	}
+
+	@UseGuards(JwtRefreshAuthGuard)
+	@Post("refresh")
+	@ApiBearerAuth("JWT")
+	@ApiOperation({
+		summary: "Refreshes the access token",
+		description: "Generates a new 'accessToken' using a valid 'refreshToken'",
+	})
+	@ApiOkResponse({
+		status: 200,
+		description: "Access token refreshed successfully",
+		example: LoginResponse,
+	})
+	@ApiUnauthorizedResponse({
+		description: "Invalid or expired refresh token",
+		example: InvalidTokenResponse,
+	})
+	async refresh(@Request() req, @Body() { refreshToken }: RefreshTokenDTO) {
+		console.log(req.user);
+		return this.authService.refresh(req.user.attributes.id, refreshToken);
 	}
 
 	@Public()

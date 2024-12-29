@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-kysely"
-  output = "../src/db"
+  output   = "../src/db"
   fileName = "types.ts"
 }
 
@@ -10,93 +10,100 @@ datasource db {
 }
 
 model User {
-  id                  String            @id  @default(uuid())
-  displayName         String?
-  username            String            @unique
-  email               String            @unique
-  password            String
-  kweeks              Kweek[]
-  profileImage        String?
-  likedKweeks         KweekLike[]
-  likedComments       CommentLike[]
-  followers           Follows[]         @relation("follower")
-  following           Follows[]         @relation("following")
-  kweeksComments      Comments[]
-  fromNotifications   Notifications[]   @relation("fromNotifications")
-  toNotifications     Notifications[]   @relation("toNotifications")
-  socketId            String?
-  createdAt           DateTime          @default(now())
+  id                String          @id @default(uuid())
+  displayName       String?
+  username          String          @unique
+  email             String          @unique
+  password          String
+  kweeks            Kweek[]
+  profileImage      String?
+  likedKweeks       KweekLike[]
+  likedComments     CommentLike[]
+  followers         Follows[]       @relation("follower")
+  following         Follows[]       @relation("following")
+  kweeksComments    Comments[]
+  fromNotifications Notifications[] @relation("fromNotifications")
+  toNotifications   Notifications[] @relation("toNotifications")
+  socketId          String?
+  refreshToken      RefreshToken[]
+  createdAt         DateTime        @default(now())
+}
+
+model RefreshToken {
+  id         String   @id @default(uuid())
+  token      String
+  userId     String   @unique
+  expiryDate DateTime
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Kweek {
-  id            String      @id @default(uuid())
-  content       String
-  authorId      String
-  author        User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  likes         KweekLike[]
-  comments      Comments[]
-  attachments   String[]
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id          String      @id @default(uuid())
+  content     String
+  authorId    String
+  author      User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  likes       KweekLike[]
+  comments    Comments[]
+  attachments String[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
 model KweekLike {
-  kweekId    String
-  kweek      Kweek      @relation(fields: [kweekId], references: [id], onDelete: Cascade)
-  userId     String
-  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt  DateTime   @default(now())
-  
+  kweekId   String
+  kweek     Kweek    @relation(fields: [kweekId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
   @@id([kweekId, userId])
 }
 
-// I should join these two up? Yeah, but I will not do it since it didn't work on the first time.
-
 model CommentLike {
   commentId String
-  comment   Comments  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  comment   Comments @relation(fields: [commentId], references: [id], onDelete: Cascade)
   userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime  @default(now())
-  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
   @@id([commentId, userId])
 }
 
 model Follows {
-  follower    User    @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+  follower    User   @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
   followerId  String
-  following   User    @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+  following   User   @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
   followingId String
 
   @@id([followerId, followingId])
 }
 
 model Comments {
-  id          String         @id @default(uuid())
+  id          String        @id @default(uuid())
   content     String
   userId      String
-  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   kweekId     String?
-  kweek       Kweek?          @relation(fields: [kweekId], references: [id], onDelete: Cascade)
+  kweek       Kweek?        @relation(fields: [kweekId], references: [id], onDelete: Cascade)
   likes       CommentLike[]
   attachments String[]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt  @default(now())
-  
-  parentId    String?
-  parent      Comments?      @relation("CommentReplies", fields: [parentId], references: [id])
-  replies     Comments[]     @relation("CommentReplies")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
+
+  parentId String?
+  parent   Comments?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies  Comments[] @relation("CommentReplies")
 }
 
 model Notifications {
-  id            String             @id @default(uuid())
-  type          NotificationType
-  content       String
-  createdAt     DateTime           @default(now())
-  fromUserId    String
-  fromUser      User?              @relation(name: "fromNotifications", fields: [fromUserId], references: [id], onDelete: Cascade)
-  toUserId      String
-  toUser        User?              @relation(name: "toNotifications", fields: [toUserId], references: [id], onDelete: Cascade)
+  id         String           @id @default(uuid())
+  type       NotificationType
+  content    String
+  createdAt  DateTime         @default(now())
+  fromUserId String
+  fromUser   User?            @relation(name: "fromNotifications", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUserId   String
+  toUser     User?            @relation(name: "toNotifications", fields: [toUserId], references: [id], onDelete: Cascade)
 }
 
 enum NotificationType {

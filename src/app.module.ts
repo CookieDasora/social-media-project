@@ -1,21 +1,30 @@
 import { KyselyModule } from "@common/services/kysely/kysely.module";
 import { FastifyMulterModule } from "@nest-lab/fastify-multer";
 import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis";
+import { RedisModule } from "@nestjs-modules/ioredis";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD, APP_PIPE } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule, seconds } from "@nestjs/throttler";
+import { LoggerModule } from "nestjs-pino";
 import { S3Module } from "nestjs-s3";
 import { ZodValidationPipe } from "nestjs-zod";
 import { AuthModule } from "./auth/auth.module";
-import { JwtAuthGuard } from "./auth/jwt-auth.guard";
+import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
 import { Environment } from "./environment";
 import { KweeksModule } from "./kweeks/kweeks.module";
 import { UserModule } from "./users/users.module";
 
 @Module({
 	imports: [
+		LoggerModule.forRoot({
+			pinoHttp: {
+				transport: {
+					target: "pino-pretty",
+				},
+			},
+		}),
 		ThrottlerModule.forRoot({
 			throttlers: [
 				{
@@ -68,6 +77,10 @@ import { UserModule } from "./users/users.module";
 			defaults: {
 				from: `Project Knedita <${Environment.env.EMAIL_ID}>`,
 			},
+		}),
+		RedisModule.forRoot({
+			type: "single",
+			url: Environment.env.REDIS_URL,
 		}),
 	],
 	providers: [

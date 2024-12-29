@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import { Logger } from "@nestjs/common";
 import * as Handlebars from "handlebars";
 import mjml from "mjml";
 
@@ -33,6 +34,7 @@ export interface BuiltTemplate {
 
 @Injectable()
 export class TemplateService {
+	private readonly logger = new Logger(TemplateService.name);
 	/**
 	 * Get the template and render with the dynamic content
 	 * */
@@ -47,8 +49,7 @@ export class TemplateService {
 			const metadata = await this.getEmailData(name);
 			return { html, metadata };
 		} catch (e) {
-			console.error(`Error reading email template: ${e}`);
-			throw new InternalServerErrorException();
+			this.logger.error("Error reading email template: %s", e.message());
 		}
 	}
 
@@ -60,12 +61,12 @@ export class TemplateService {
 	): Promise<ReturnType<typeof mjml>> {
 		try {
 			const file = await readFile(
-				path.resolve(__dirname, "./templates", `${template}.mjml`),
+				this.resolveTemplatePath(template, "mjml"),
 				"utf8",
 			);
 			return mjml(file);
 		} catch (e) {
-			console.error(`Error reading template: ${e}`);
+			this.logger.error("Error reading template: %s", e.message());
 			throw new InternalServerErrorException();
 		}
 	}
@@ -73,16 +74,20 @@ export class TemplateService {
 	/**
 	 * Read the JSON file which contains the email's metadata
 	 * */
-	async getEmailData(template: string): Promise<EmailMetadata> {
+	async getEmailData(template: EmailType): Promise<EmailMetadata> {
 		try {
 			const contents = await readFile(
-				path.resolve(__dirname, "./templates", `${template}.json`),
+				this.resolveTemplatePath(template, "json"),
 				"utf8",
 			);
 			return JSON.parse(contents);
 		} catch (e) {
-			console.error(`Error reading template: ${e}`);
+			this.logger.error("Error reading template: %s", e.message());
 			throw new InternalServerErrorException();
 		}
+	}
+
+	private resolveTemplatePath(template: EmailType, extension: string): string {
+		return path.resolve(__dirname, `./templates/${template}.${extension}`);
 	}
 }

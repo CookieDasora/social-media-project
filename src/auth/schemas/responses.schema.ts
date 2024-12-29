@@ -4,8 +4,15 @@ export const UnauthorizedResponse = {
 	statusCode: 401,
 };
 
+export const InvalidTokenResponse = {
+	message: "Invalid refresh token provided",
+	error: "Unauthorized",
+	statusCode: 401,
+};
+
 export const LoginResponse = {
-	token: "eyJhbGciOiJIUzI1NiIs...",
+	accessToken: "eyJhbGciOiJIUzI1NiIs...",
+	refreshToken: "eyJhbGciOiJIUzI1NiIs...",
 };
 
 export const SignUpErrors = {
