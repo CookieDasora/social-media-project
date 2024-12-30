@@ -12,7 +12,7 @@ export const InvalidTokenResponse = {
 
 export const LoginResponse = {
 	accessToken: "eyJhbGciOiJIUzI1NiIs...",
-	refreshToken: "eyJhbGciOiJIUzI1NiIs...",
+	refreshToken: "rsk29ixh03cj...",
 };
 
 export const SignUpErrors = {
