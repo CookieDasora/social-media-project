@@ -8,7 +8,7 @@
 		"typeCheck": true,
 		"assets": [
 			{
-				"include": "common/services/mail/templates/**/*",
+				"include": "common/modules/mail/templates/**/*",
 				"outDir": "dist"
 			}
 		],

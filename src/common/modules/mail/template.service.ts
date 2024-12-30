@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { TemplateFactory } from "@common/modules/mail/template.factory";
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { Logger } from "@nestjs/common";
 import * as Handlebars from "handlebars";
@@ -19,9 +20,22 @@ export type EmailMetadata = {
 
 export abstract class EmailTemplate<T> {
 	constructor(public context: T) {}
+
 	public name: EmailType;
+
 	get data(): T | unknown {
 		return this.context;
+	}
+
+	toJSON(): { name: EmailType; data: T } {
+		return {
+			name: this.name,
+			data: this.context,
+		};
+	}
+
+	static fromJSON<T>(json: { name: EmailType; data: T }): EmailTemplate<T> {
+		return TemplateFactory.createTemplate(json.name, json.data);
 	}
 }
 
@@ -35,21 +49,23 @@ export interface BuiltTemplate {
 @Injectable()
 export class TemplateService {
 	private readonly logger = new Logger(TemplateService.name);
+
 	/**
 	 * Get the template and render with the dynamic content
 	 * */
-	async getTemplate<T>({
-		name,
-		data,
-	}: EmailTemplate<T>): Promise<BuiltTemplate> {
+	async getTemplate<T>(
+		emailTemplate: EmailTemplate<T>,
+	): Promise<BuiltTemplate> {
 		try {
-			const result = await this.getEmailTemplate(name);
-			const template = Handlebars.compile<typeof data>(result.html);
-			const html = template(data);
-			const metadata = await this.getEmailData(name);
+			const result = await this.getEmailTemplate(emailTemplate.name);
+			const template = Handlebars.compile<typeof emailTemplate.data>(
+				result.html,
+			);
+			const html = template(emailTemplate.data);
+			const metadata = await this.getEmailData(emailTemplate.name);
 			return { html, metadata };
 		} catch (e) {
-			this.logger.error("Error reading email template: %s", e.message());
+			this.logger.error("Error reading email template: %s", e.message);
 		}
 	}
 
@@ -66,7 +82,7 @@ export class TemplateService {
 			);
 			return mjml(file);
 		} catch (e) {
-			this.logger.error("Error reading template: %s", e.message());
+			this.logger.error("Error reading template: %s", e.message);
 			throw new InternalServerErrorException();
 		}
 	}
@@ -82,7 +98,7 @@ export class TemplateService {
 			);
 			return JSON.parse(contents);
 		} catch (e) {
-			this.logger.error("Error reading template: %s", e.message());
+			this.logger.error("Error reading template: %s", e.message);
 			throw new InternalServerErrorException();
 		}
 	}

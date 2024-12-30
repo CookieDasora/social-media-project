@@ -1,5 +1,5 @@
 import { UsersRepository } from "@/users/repository/users.repository";
-import { S3Service } from "@common/services/s3/s3.service";
+import { S3Service } from "@common/modules/s3/s3.service";
 import { Module } from "@nestjs/common";
 import { CommentsController } from "./comments.controller";
 import { CommentsService } from "./comments.service";

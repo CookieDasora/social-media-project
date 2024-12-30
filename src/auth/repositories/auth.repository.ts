@@ -1,5 +1,5 @@
 import { UserModel } from "@/users/models/user.model";
-import { Database } from "@common/services/kysely/kysely.service";
+import { Database } from "@common/modules/kysely/kysely.service";
 import { Injectable } from "@nestjs/common";
 import { v4 as uuid } from "uuid";
 

@@ -39,6 +39,7 @@ This command will initialize the following services
 - Postgres
 - Redis
 - MinIO
+- RabbitMQ
 - API Server
 
 After that, apply the migrations to the Postgres database:

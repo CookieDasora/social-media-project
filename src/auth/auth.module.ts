@@ -1,5 +1,5 @@
 import { Environment } from "@/environment";
-import { RedisModule } from "@nestjs-modules/ioredis";
+import { QueueProducer } from "@common/modules/queue/queue.producer";
 import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
@@ -18,7 +18,6 @@ import { LocalStrategy } from "./strategies/local.strategy";
 			secret: Environment.env.JWT_ACCESS_SECRET,
 			signOptions: { expiresIn: "30s" },
 		}),
-		RedisModule,
 	],
 	providers: [
 		AuthRepository,
@@ -26,6 +25,7 @@ import { LocalStrategy } from "./strategies/local.strategy";
 		AuthRefreshTokenService,
 		LocalStrategy,
 		JwtStrategy,
+		QueueProducer,
 	],
 })
 export class AuthModule {}

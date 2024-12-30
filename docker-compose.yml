@@ -1,7 +1,7 @@
 networks:
   backend-network:
     driver: bridge
-    
+
 services:
   postgres:
     image: postgres:17
@@ -41,6 +41,18 @@ services:
     networks:
       - backend-network
 
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    env_file:
+      - .env
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq/data
+
   api:
     container_name: api
     restart: unless-stopped
@@ -64,4 +76,6 @@ volumes:
   redis:
     driver: local
   minio_data:
+    driver: local
+  rabbitmq:
     driver: local

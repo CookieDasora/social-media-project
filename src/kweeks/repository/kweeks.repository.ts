@@ -1,4 +1,4 @@
-import { Database } from "@/common/services/kysely/kysely.service";
+import { Database } from "@common/modules/kysely/kysely.service";
 import { Injectable } from "@nestjs/common";
 import {
 	jsonArrayFrom,

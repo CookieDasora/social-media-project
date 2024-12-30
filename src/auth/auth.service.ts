@@ -1,4 +1,5 @@
 import { UserModel } from "@/users/models/user.model";
+import { QueueProducer } from "@common/modules/queue/queue.producer";
 import { BadRequestException, Injectable } from "@nestjs/common";
 import * as argon2 from "argon2";
 import { AuthRefreshTokenService } from "./auth-refresh-token.service";
@@ -10,6 +11,7 @@ export class AuthService {
 	constructor(
 		private authRepository: AuthRepository,
 		private authRefreshTokenService: AuthRefreshTokenService,
+		private readonly queueService: QueueProducer,
 	) {}
 
 	async validateUser(

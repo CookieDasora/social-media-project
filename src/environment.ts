@@ -58,6 +58,8 @@ const EnvironmentSchema = z.object({
 	EMAIL_PASS: z.string(),
 	EMAIL_HOST: z.string(),
 	EMAIL_PORT: z.string().regex(/^[0-9]+$/),
+
+	RABBITMQ_ENDPOINT: z.string(),
 });
 
 type IEnvironment = z.infer<typeof EnvironmentSchema>;

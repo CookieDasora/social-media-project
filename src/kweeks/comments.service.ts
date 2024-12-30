@@ -1,4 +1,4 @@
-import { S3Service } from "@common/services/s3/s3.service";
+import { S3Service } from "@common/modules/s3/s3.service";
 import { File } from "@nest-lab/fastify-multer";
 import {
 	BadRequestException,

@@ -1,14 +1,14 @@
-import { KyselyModule } from "@common/services/kysely/kysely.module";
+import { KyselyModule } from "@common/modules/kysely/kysely.module";
+import { MailModule } from "@common/modules/mail/mail.module";
+import { QueueModule } from "@common/modules/queue/queue.module";
+import { StorageModule } from "@common/modules/s3/s3.module";
 import { FastifyMulterModule } from "@nest-lab/fastify-multer";
 import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis";
-import { RedisModule } from "@nestjs-modules/ioredis";
-import { MailerModule } from "@nestjs-modules/mailer";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD, APP_PIPE } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule, seconds } from "@nestjs/throttler";
 import { LoggerModule } from "nestjs-pino";
-import { S3Module } from "nestjs-s3";
 import { ZodValidationPipe } from "nestjs-zod";
 import { AuthModule } from "./auth/auth.module";
 import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
@@ -50,38 +50,13 @@ import { UserModule } from "./users/users.module";
 		ConfigModule.forRoot({
 			isGlobal: true,
 		}),
+		MailModule,
 		FastifyMulterModule,
 		UserModule,
 		KweeksModule,
 		AuthModule,
-		S3Module.forRoot({
-			config: {
-				credentials: {
-					accessKeyId: Environment.env.MINIO_ROOT_USER,
-					secretAccessKey: Environment.env.MINIO_ROOT_PASSWORD,
-				},
-				region: "us-east-1",
-				endpoint: Environment.env.MINIO_ENDPOINT,
-				forcePathStyle: true,
-			},
-		}),
-		MailerModule.forRoot({
-			transport: {
-				host: Environment.env.EMAIL_HOST,
-				port: Number(Environment.env.EMAIL_PORT),
-				auth: {
-					user: Environment.env.EMAIL_ID,
-					pass: Environment.env.EMAIL_PASS,
-				},
-			},
-			defaults: {
-				from: `Project Knedita <${Environment.env.EMAIL_ID}>`,
-			},
-		}),
-		RedisModule.forRoot({
-			type: "single",
-			url: Environment.env.REDIS_URL,
-		}),
+		StorageModule,
+		QueueModule,
 	],
 	providers: [
 		{
