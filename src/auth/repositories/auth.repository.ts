@@ -47,12 +47,11 @@ export class AuthRepository {
 		return user ?? undefined;
 	}
 
-	async findRefreshToken(refreshToken: string, userId: string) {
+	async findRefreshToken(refreshToken: string) {
 		const token = await this.database
 			.selectFrom("RefreshToken")
 			.selectAll()
 			.where("token", "=", refreshToken)
-			.where("userId", "=", userId)
 			.executeTakeFirst();
 		return token ?? undefined;
 	}

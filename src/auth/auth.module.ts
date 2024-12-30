@@ -7,7 +7,6 @@ import { AuthRefreshTokenService } from "./auth-refresh-token.service";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { AuthRepository } from "./repositories/auth.repository";
-import { JwtRefreshStrategy } from "./strategies/jwt-refresh.strategy";
 import { JwtStrategy } from "./strategies/jwt.strategy";
 import { LocalStrategy } from "./strategies/local.strategy";
 
@@ -27,7 +26,6 @@ import { LocalStrategy } from "./strategies/local.strategy";
 		AuthRefreshTokenService,
 		LocalStrategy,
 		JwtStrategy,
-		JwtRefreshStrategy,
 	],
 })
 export class AuthModule {}

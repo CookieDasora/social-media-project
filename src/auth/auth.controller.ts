@@ -25,7 +25,6 @@ import { SignInUserDTO } from "./dto/sign-in.dto";
 import { SignUpUserDTO } from "./dto/sign-up.dto";
 import { UpdateEmailDTO } from "./dto/update-email.dto";
 import { UpdatePasswordDTO } from "./dto/update-password.dto";
-import { JwtRefreshAuthGuard } from "./guards/jwt-refresh-auth.guard";
 import { LocalAuthGuard } from "./guards/local-auth.guard";
 import {
 	InvalidTokenResponse,
@@ -66,9 +65,8 @@ export class AuthController {
 		return this.authService.login(req.user);
 	}
 
-	@UseGuards(JwtRefreshAuthGuard)
+	@Public()
 	@Post("refresh")
-	@ApiBearerAuth("JWT")
 	@ApiOperation({
 		summary: "Refreshes the access token",
 		description: "Generates a new 'accessToken' using a valid 'refreshToken'",
@@ -83,8 +81,7 @@ export class AuthController {
 		example: InvalidTokenResponse,
 	})
 	async refresh(@Request() req, @Body() { refreshToken }: RefreshTokenDTO) {
-		console.log(req.user);
-		return this.authService.refresh(req.user.attributes.id, refreshToken);
+		return this.authService.refresh(refreshToken);
 	}
 
 	@Public()

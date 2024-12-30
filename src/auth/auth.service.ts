@@ -34,11 +34,8 @@ export class AuthService {
 		return await this.authRefreshTokenService.generateKeyPair(user.id);
 	}
 
-	async refresh(userId: string, refreshToken: string) {
-		return await this.authRefreshTokenService.refreshToken(
-			refreshToken,
-			userId,
-		);
+	async refresh(refreshToken: string) {
+		return await this.authRefreshTokenService.refreshToken(refreshToken);
 	}
 
 	async signUp({

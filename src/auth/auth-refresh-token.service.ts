@@ -1,6 +1,8 @@
 import { Environment } from "@/environment";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import { createId } from "@paralleldrive/cuid2";
+import * as argon2 from "argon2";
 import { AuthRepository } from "./repositories/auth.repository";
 
 @Injectable()
@@ -14,11 +16,11 @@ export class AuthRefreshTokenService {
 	}
 
 	async generateRefreshToken(userId: string): Promise<string> {
-		const refreshToken = this.jwtService.sign(
-			{ sub: userId },
-			{ secret: Environment.env.JWT_ACCESS_SECRET, expiresIn: "7d" },
-		);
-		await this.authRepository.storeRefreshToken(refreshToken, userId);
+		const refreshToken = createId();
+		const hashedToken = await argon2.hash(refreshToken, {
+			salt: Buffer.from(Environment.env.ARGON_SECRET),
+		});
+		await this.authRepository.storeRefreshToken(hashedToken, userId);
 		return refreshToken;
 	}
 
@@ -31,11 +33,11 @@ export class AuthRefreshTokenService {
 		};
 	}
 
-	async refreshToken(refreshToken: string, userId: string) {
-		const token = await this.authRepository.findRefreshToken(
-			refreshToken,
-			userId,
-		);
+	async refreshToken(refreshToken: string) {
+		const hashedToken = await argon2.hash(refreshToken, {
+			salt: Buffer.from(Environment.env.ARGON_SECRET),
+		});
+		const token = await this.authRepository.findRefreshToken(hashedToken);
 		if (!token) {
 			throw new UnauthorizedException("Invalid refresh token provided");
 		}

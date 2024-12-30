@@ -14,12 +14,10 @@ import { AppModule } from "./app.module";
 /*
   --- Present ---
 
-  TODO: Send e-mails to the user when something happens to his account.
   TODO: Improve documentation (specially in Kweek module)
   TODO: Better authentication (Add OAuth e.g.)
-      - TODO: Fix the refreshToken's logic.
-              (A user can access the protected resources
-              with a refreshToken instead of an accessToken) 
+    - TODO: Send verify and 2 step email
+    - TODO: Send e-mails to the user when something happens to his account.
   TODO: Add pagination on some queries
   TODO: Generate a signed url instead of returning a s3 link 
   TODO: Create the chat system.

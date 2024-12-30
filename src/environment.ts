@@ -47,6 +47,7 @@ const EnvironmentSchema = z.object({
 	SERVER_HOST: z.string(),
 
 	JWT_ACCESS_SECRET: z.string(),
+	ARGON_SECRET: z.string(),
 
 	MINIO_ROOT_USER: z.string(),
 	MINIO_ROOT_PASSWORD: z.string(),
