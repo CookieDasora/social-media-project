@@ -10,7 +10,7 @@ A social networking application developed using the [NestJS](https://nestjs.com/
 the power of [Fastify](https://fastify.dev/) and [Bun](https://bun.sh/).
 
 ## ✋ Requirements
-Make sure you have **Bun** in the **latest version**, **Docker** and **Docker Compose**.
+Make sure you have **Bun** in the **latest version** (>= 1.1.43), **Docker** and **Docker Compose**.
 
 ## 🛠️ Installation
 Clone the repository using the following command
