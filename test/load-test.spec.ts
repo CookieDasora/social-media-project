@@ -1,4 +1,4 @@
-// Ignore this error since k6 uses another runtime that's able to fetch this import.
+// @ts-nocheck
 import { FormData } from "https://jslib.k6.io/formdata/0.0.2/index.js";
 import { check, sleep } from "k6";
 import http from "k6/http";

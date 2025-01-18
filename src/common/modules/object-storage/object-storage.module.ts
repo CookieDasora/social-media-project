@@ -1,55 +1,73 @@
-import { DynamicModule, Module } from "@nestjs/common";
-import { ObjectStorageCore } from "./object-storage.core";
-import { ObjectStorageModuleOptions } from "./object-storage.interface";
+import {
+	DynamicModule,
+	Global,
+	Inject,
+	Module,
+	Provider,
+} from "@nestjs/common";
+import { S3Client, S3Options } from "bun";
 
-/*
- * Disclaimer: using this module will break the command "dev:start" because it's using node.
- *             Docker deployment will work as usual.
- *
- * Implements Bun's S3 API, based on the package `nestjs-s3`
- *
- * Simple usage:
- *
- *  @Module({
- *    imports: [
- *		 ObjectStorageModule.forRoot({
- *			 clientOptions: {
- *				 accessKeyId: Environment.env.MINIO_ROOT_USER,
- *				 secretAccessKey: Environment.env.MINIO_ROOT_PASSWORD,
- *				 bucket: Environment.env.MINIO_DEFAULT_BUCKETS,
- *				 endpoint: Environment.env.MINIO_ENDPOINT,
- *			 },
- *		 }),
- *	 ],
- *	 controllers: [ObjectStorageExampleController],
- * })
- * export class ObjectStorageExampleModule {}
- *
- * @Controller()
- * export class ObjectStorageExampleController {
- *   // S3 from @common/modules/object-storage
- *   constructor(@ObjectStorage() private readonly s3: S3) {}
- *   @Get()
- *   async test() {
- *     const file = this.s3.file("hello.txt");
- *     await file.write("Hello, world!");
- *     return file.presign({
- *       expiresIn: 60 * 60 * 24,
- *       acl: "public-read",
- *     });
- *   }
- * }
- *
- * */
+// Constants
+export const CONNECTION = "default";
+export const CONNECTION_TOKEN = "ObjectStorageModuleConnectionToken";
+export const OPTIONS_TOKEN = "ObjectStorageModuleOptionsToken";
 
+// Interfaces
+export type S3 = S3Client;
+export interface ModuleOptions {
+	options: S3Options;
+}
+
+// Helpers
+export function getOptionsToken(connection: string): string {
+	return `${connection || CONNECTION}_${OPTIONS_TOKEN}`;
+}
+
+export function getConnectionToken(connection: string): string {
+	return `${connection || CONNECTION}_${CONNECTION_TOKEN}`;
+}
+
+export function createConnection({ options }: ModuleOptions): S3Client {
+	return new S3Client(options);
+}
+
+// Decorator
+export const ObjectStorage = (connection: string = CONNECTION) =>
+	Inject(getConnectionToken(connection));
+
+// Core Module
+@Global()
+@Module({})
+class ObjectStorageCoreModule {
+	static forRoot(
+		options: ModuleOptions,
+		connection: string = CONNECTION,
+	): DynamicModule {
+		const optionsProvider: Provider = {
+			provide: getOptionsToken(connection),
+			useValue: options,
+		};
+		const connectionProvider: Provider = {
+			provide: getConnectionToken(connection),
+			useFactory: () => createConnection(options),
+		};
+		return {
+			module: ObjectStorageCoreModule,
+			providers: [optionsProvider, connectionProvider],
+			exports: [optionsProvider, connectionProvider],
+		};
+	}
+}
+
+// Main Module
 @Module({})
 // biome-ignore lint/complexity/noStaticOnlyClass: necessary static
 export class ObjectStorageModule {
-	public static forRoot(options: ObjectStorageModuleOptions): DynamicModule {
+	static forRoot(options: ModuleOptions): DynamicModule {
 		return {
 			module: ObjectStorageModule,
-			imports: [ObjectStorageCore.forRoot(options)],
-			exports: [ObjectStorageCore],
+			imports: [ObjectStorageCoreModule.forRoot(options)],
+			exports: [ObjectStorageCoreModule],
 		};
 	}
 }
