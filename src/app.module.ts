@@ -1,6 +1,5 @@
 import { KyselyModule } from "@common/modules/kysely/kysely.module";
 import { MailModule } from "@common/modules/mail/mail.module";
-import { ObjectStorageModule } from "@common/modules/object-storage/module";
 import { QueueModule } from "@common/modules/queue/queue.module";
 import { StorageModule } from "@common/modules/s3/s3.module";
 import { FastifyMulterModule } from "@nest-lab/fastify-multer";
